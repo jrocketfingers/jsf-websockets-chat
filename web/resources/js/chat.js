@@ -2,7 +2,8 @@ var chatsocket = new WebSocket("ws://localhost:8080/ChatApplication/chat");
 
 function sendMessage() {
     message = document.getElementById("form:message").value
-    chatsocket.send(message);
+    nickname = document.getElementById("form:nickname").value
+    chatsocket.send(nickname + ": " + message);
     console.log("Socket state: " + chatsocket.readyState);
     console.log("Message: " + message);
 }
