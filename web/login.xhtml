@@ -7,11 +7,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
     <body>
-        <h1>Reserve Nickname:</h1>
-        <h:form id="reserve">
+        <h1>Login:</h1>
+        <h:form id="login">
             Nickname: <h:inputText id="nickname" value="#{user.nickname}" /> <br />
             Password: <h:inputSecret id="password" value="#{user.password}" /> <br />
-            <h:commandButton value="Reserve" action="#{server_data.reserve}" />
+            <h:commandButton value="Login" action="#{server_data.login}" />
         </h:form>
     </body>
 </html>
