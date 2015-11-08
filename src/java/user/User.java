@@ -7,6 +7,7 @@ package user;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.websocket.RemoteEndpoint;
 
 /**
  *
@@ -15,6 +16,26 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean(name="user")
 @SessionScoped
 public class User {
+
+    private RemoteEndpoint.Basic socket;
+
+    /**
+     * Get the value of socket
+     *
+     * @return the value of socket
+     */
+    public RemoteEndpoint.Basic getSocket() {
+        return socket;
+    }
+
+    /**
+     * Set the value of socket
+     *
+     * @param socket new value of socket
+     */
+    public void setSocket(RemoteEndpoint.Basic socket) {
+        this.socket = socket;
+    }
 
     private String password;
 

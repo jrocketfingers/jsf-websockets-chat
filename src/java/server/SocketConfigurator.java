@@ -21,7 +21,6 @@ public class SocketConfigurator extends ServerEndpointConfig.Configurator {
         super.modifyHandshake(sec, request, response); //To change body of generated methods, choose Tools | Templates.
         
         sec.getUserProperties().put("session", (HttpSession) request.getHttpSession());
-        
     }
     
 }

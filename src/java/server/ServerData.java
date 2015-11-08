@@ -21,19 +21,24 @@ import user.User;
 @ManagedBean(name="server_data")
 @ApplicationScoped
 public class ServerData {
-    private HashMap<String,String> nicknames = new HashMap();
     /**
      * Creates a new instance of ServerData
      */
     public ServerData() {
 
     }
+
+    private HashMap<User,String> users = new HashMap();
+
+    public HashMap<User, String> getUsers() {
+		return users;
+	}
     
     public String reserve() {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         User user = (User) session.getAttribute("user");
         
-        nicknames.put(user.getNickname(), user.getPassword());
+        users.put(user, user.getPassword());
         
         return "login";
     }
@@ -42,7 +47,7 @@ public class ServerData {
         Map<String,Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         User user = (User) sessionMap.get("user");
         
-        String stored_password = nicknames.get(user.getNickname());
+        String stored_password = users.get(user);
         
         if(user.getPassword() != null && stored_password.equals(user.getPassword())) {
             sessionMap.put("logged_in", "true");

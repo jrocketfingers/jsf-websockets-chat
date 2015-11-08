@@ -7,6 +7,7 @@ package server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
@@ -26,38 +27,63 @@ import user.User;
 @javax.websocket.server.ServerEndpoint(value = "/chat",
                                        configurator = SocketConfigurator.class)
 public class ServerEndpoint {
-    private static ArrayList<RemoteEndpoint.Basic> clients = new ArrayList();
-    
     private RemoteEndpoint.Basic client;
     
     private HttpSession httpSession;
-    private String nickname;
+    private User user;
+    private ServerData server;
     
     @OnOpen
     public String onOpen(Session s, EndpointConfig config) {
         client = s.getBasicRemote();
-        clients.add(client);
         
         httpSession = (HttpSession) config.getUserProperties().get("session");
-        nickname = ((User) httpSession.getAttribute("user")).getNickname();
+        user = (User) httpSession.getAttribute("user");
+        user.setSocket(client);
+        
+	// Add the user - password combination to the server
+        server = (ServerData) httpSession.getServletContext().getAttribute("server_data");
+        server.getUsers().put(user, user.getPassword());
+        
+        sendMessageToAll(user.getNickname() + " has joined the channel");
+        
+        sendUserListToAll();
         
         return "Connected!";
     }
     
     @OnClose
-    public void onClose(Session s) {
-        clients.remove(client);
+    public void onClose(Session s) {        
+	server.getUsers().remove(user);
+        sendMessageToAll(user.getNickname() + " has left");
     }
     
     @OnMessage
     public void onMessage(String message) {
-        for(RemoteEndpoint.Basic client: clients) {
+        sendMessageToAll(user.getNickname() + ": " + message);
+    }
+    
+    private void sendUserListToAll() {
+        String userlist = "users:";
+        for(User user : server.getUsers().keySet()) {
+            userlist += user.getNickname() + "\n";
+        }
+
+        sendToAll(userlist);
+    }
+    
+    private void sendToAll(String message) {
+        for(User user : server.getUsers().keySet()) {
             try {
-                client.sendText(nickname + ": " + message);
+                user.getSocket().sendText(message);
             } catch (IOException ex) {
                 Logger.getLogger(ServerEndpoint.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private void sendMessageToAll(String message) {
+        sendToAll("message:" + message);
     }
     
 }
